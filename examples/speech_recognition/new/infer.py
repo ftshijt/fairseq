@@ -4,6 +4,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import re
 import ast
 import hashlib
 import logging
@@ -291,6 +292,8 @@ class InferenceProcessor:
             print(f"{tgt_pieces} ({speaker}-{sid})", file=self.ref_units_file)
             print(f"{tgt_words} ({speaker}-{sid})", file=self.ref_words_file)
 
+        hyp_words = re.sub("<space>", " ", hyp_words)
+        tgt_words = re.sub("<space>", " ", tgt_words)
         if not self.cfg.common_eval.quiet:
             logger.info(f"HYPO: {hyp_words}")
             logger.info(f"REF: {tgt_words}")

@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from omegaconf import II
 from typing import Optional
 
+import logging
 import torch
 import torch.nn.functional as F
 from fairseq import metrics, utils
@@ -133,6 +134,7 @@ class CtcCriterion(FairseqCriterion):
             target_lengths = pad_mask.sum(-1)
 
         with torch.backends.cudnn.flags(enabled=False):
+            # logging.info("lprobs shape {}, input_length shape {}".format(lprobs.shape, input_lengths) )
             loss = F.ctc_loss(
                 lprobs,
                 targets_flat,

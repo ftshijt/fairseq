@@ -22,7 +22,7 @@ decoding:
   unique_wer_file: true
 common_eval:
   results_path: ???
-  path: ???
+  path: infer_viterbi
   post_process: letter
 dataset:
   max_tokens: 1100000

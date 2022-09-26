@@ -56,6 +56,7 @@ __all__ = [
 def build_model(cfg: FairseqDataclass, task, from_checkpoint=False):
 
     model = None
+    print(cfg)
     model_type = getattr(cfg, "_name", None) or getattr(cfg, "arch", None)
 
     if not model_type and len(cfg) == 1:
@@ -73,6 +74,7 @@ def build_model(cfg: FairseqDataclass, task, from_checkpoint=False):
                 + model_type
             )
 
+    print(MODEL_DATACLASS_REGISTRY.keys())
     if model_type in ARCH_MODEL_REGISTRY:
         # case 1: legacy models
         model = ARCH_MODEL_REGISTRY[model_type]
