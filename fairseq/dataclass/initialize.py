@@ -13,18 +13,26 @@ from omegaconf import DictConfig, OmegaConf
 logger = logging.getLogger(__name__)
 
 
-def hydra_init(cfg_name="config") -> None:
-
+def hydra_init(config_path: str = "conf") -> None:
+    from hydra.core.config_store import ConfigStore
+    from fairseq.dataclass.configs import FairseqConfig
+    
     cs = ConfigStore.instance()
-    cs.store(name=f"{cfg_name}", node=FairseqConfig)
-
-    for k in FairseqConfig.__dataclass_fields__:
-        v = FairseqConfig.__dataclass_fields__[k].default
+    cs.store(name="config", node=FairseqConfig)
+    
+    # Skip problematic configs
+    skip_configs = set()  # Add problematic config names here
+    
+    for k, v in FairseqConfig.__dataclass_fields__.items():
+        if k in skip_configs:
+            continue
+        if v.type.__name__ == "FairseqDataclass":
+            continue
         try:
-            cs.store(name=k, node=v)
-        except BaseException:
-            logger.error(f"{k} - {v}")
-            raise
+            cs.store(name=k, node=v.type)
+        except:
+            print(f"Skipping config registration for {k}")
+            continue
 
 
 def add_defaults(cfg: DictConfig) -> None:

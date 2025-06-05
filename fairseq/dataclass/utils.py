@@ -9,7 +9,7 @@ import logging
 import os
 import re
 from argparse import ArgumentError, ArgumentParser, Namespace
-from dataclasses import _MISSING_TYPE, MISSING, is_dataclass
+from dataclasses import MISSING, is_dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Type
 
@@ -151,6 +151,9 @@ def gen_parser_from_dataclass(
             kwargs["const"] = field_const
             kwargs["nargs"] = "?"
 
+        if not k.startswith('-') and 'required' in kwargs:
+            del kwargs['required']
+
         return kwargs
 
     for k in dataclass_instance._get_all_attributes():
@@ -225,7 +228,7 @@ def _override_attr(
         return overrides
 
     def get_default(f):
-        if not isinstance(f.default_factory, _MISSING_TYPE):
+        if not isinstance(f.default_factory, None):
             return f.default_factory()
         return f.default
 

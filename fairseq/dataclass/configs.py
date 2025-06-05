@@ -5,7 +5,7 @@
 
 import os
 import sys
-from dataclasses import _MISSING_TYPE, dataclass, field
+from dataclasses import dataclass, field
 from typing import Any, List, Optional
 
 import torch
@@ -60,8 +60,13 @@ class FairseqDataclass:
                 return getattr(self, attribute_name)
 
         f = self.__dataclass_fields__[attribute_name]
-        if not isinstance(f.default_factory, _MISSING_TYPE):
-            return f.default_factory()
+        if f.default_factory != MISSING:
+            # Check if default_factory is callable before calling it
+            if callable(f.default_factory):
+                return f.default_factory()
+            else:
+                # If it's not callable, treat it as a regular default value
+                return f.default_factory
         return f.default
 
     def _get_type(self, attribute_name: str) -> Any:
@@ -1126,16 +1131,16 @@ class EMAConfig(FairseqDataclass):
 
 @dataclass
 class FairseqConfig(FairseqDataclass):
-    common: CommonConfig = field(default_factor=CommonConfig())
-    common_eval: CommonEvalConfig = field(default_factor=CommonEvalConfig())
-    distributed_training: DistributedTrainingConfig = field(default_factor=DistributedTrainingConfig())
-    dataset: DatasetConfig = field(default_factor=DatasetConfig())
-    optimization: OptimizationConfig = field(default_factor=OptimizationConfig())
-    checkpoint: CheckpointConfig = field(default_factor=CheckpointConfig())
-    bmuf: FairseqBMUFConfig = field(default_factor=FairseqBMUFConfig())
-    generation: GenerationConfig = field(default_factor=GenerationConfig())
-    eval_lm: EvalLMConfig = field(default_factor=EvalLMConfig())
-    interactive: InteractiveConfig = field(default_factor=InteractiveConfig())
+    common: CommonConfig = field(default_factory=CommonConfig)
+    common_eval: CommonEvalConfig = field(default_factory=CommonEvalConfig)
+    distributed_training: DistributedTrainingConfig = field(default_factory=DistributedTrainingConfig)
+    dataset: DatasetConfig = field(default_factory=DatasetConfig)
+    optimization: OptimizationConfig = field(default_factory=OptimizationConfig)
+    checkpoint: CheckpointConfig = field(default_factory=CheckpointConfig)
+    bmuf: FairseqBMUFConfig = field(default_factory=FairseqBMUFConfig)
+    generation: GenerationConfig = field(default_factory=GenerationConfig)
+    eval_lm: EvalLMConfig = field(default_factory=EvalLMConfig)
+    interactive: InteractiveConfig = field(default_factory=InteractiveConfig)
     model: Any = MISSING
     task: Any = None
     criterion: Any = None
@@ -1144,4 +1149,4 @@ class FairseqConfig(FairseqDataclass):
     scoring: Any = None
     bpe: Any = None
     tokenizer: Any = None
-    ema: EMAConfig = field(default_factor=EMAConfig())
+    ema: EMAConfig = field(default_factory=EMAConfig)
