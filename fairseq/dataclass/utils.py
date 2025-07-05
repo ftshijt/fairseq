@@ -9,7 +9,7 @@ import logging
 import os
 import re
 from argparse import ArgumentError, ArgumentParser, Namespace
-from dataclasses import MISSING, is_dataclass
+from dataclasses import MISSING, is_dataclass, _MISSING_TYPE
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Type
 
@@ -228,8 +228,8 @@ def _override_attr(
         return overrides
 
     def get_default(f):
-        if f.default_factory is not None:
-            return f.default_factory()
+        if not isinstance(f.default_factory, _MISSING_TYPE):
+            return []
         return f.default
 
     for k, v in data_class.__dataclass_fields__.items():
