@@ -228,7 +228,7 @@ def _override_attr(
         return overrides
 
     def get_default(f):
-        if not isinstance(f.default_factory, None):
+        if f.default_factory is not None:
             return f.default_factory()
         return f.default
 
